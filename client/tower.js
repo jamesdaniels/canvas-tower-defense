@@ -1,3 +1,11 @@
-var Tower = function(type) {
-	// this.type = type;
+function Tower() {
+	return this;
+};
+
+Tower.prototype.draw = function(ctx) {
+	// ctx.beginPath();
+	// ctx.fillStyle = '#ffffff';
+	// ctx.arc(this.x, this.y, 3, 0, Math.PI*2, true);
+	// ctx.closePath();
+	// ctx.fill();
 };
