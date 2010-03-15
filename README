@@ -1,0 +1,10 @@
+CANVAS TOWER DEFENSE
+
+
+to run the server:
+
+	node server/runserver.js
+
+then load:
+
+	index.html
