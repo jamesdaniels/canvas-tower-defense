@@ -1,13 +1,14 @@
 var Game = function() {
+	this.node = new NodeSocket(this);
 	this.board = new Board(15);
 	this.score = 0;
 	
 	this.inc_score = function() {
 		this.score += 1;
 		if (this.score == 10) {
-			alert('You lose!');
-		}
-	}
+			// alert('You lose!');
+		};
+	};
 	
 	this.init = function(parent) {
 		this.board.generateHTML(parent);
@@ -34,6 +35,7 @@ function $(id) {
 
 var game = null;
 var enemies = [];	
+var game_state = {};	
 
 function init() {
 	game = new Game();
