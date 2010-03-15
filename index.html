@@ -1,0 +1,243 @@
+<html>
+	<script>
+		Array.prototype.compare = function(testArr) {
+				if (this.length != testArr.length) return false;
+				for (var i = 0; i < testArr.length; i++) {
+						if (this[i].compare) { 
+								if (!this[i].compare(testArr[i])) return false;
+						}
+						if (this[i] !== testArr[i]) return false;
+				}
+				return true;
+		}
+		
+		var Tower = function(type) {
+			this.type = type;
+		}
+		
+		var Enemy = function() {
+			this.x = 30;
+			this.y = 218;
+			this.speed = 5;
+			this.in_play = true;
+			
+			this.draw = function() {
+				game.board.ctx.beginPath();
+				game.board.ctx.fillStyle = '#ffffff';
+				game.board.ctx.arc(this.x, this.y, 3, 0, Math.PI*2, true);
+				game.board.ctx.closePath();
+				game.board.ctx.fill();
+			}
+			
+			this.move = function() {
+				this.x += this.speed;
+				if (game.board.exit_point.compare(translateXY(this.x, this.y))) {
+					console.log('out of play!');
+					game.inc_score();
+					this.in_play = false;
+				}
+			}
+		}
+	
+		var GameState = function() {
+			this.towers = [];
+		}
+	
+		var Board = function(radius) {
+			this.width = document.body.clientWidth;
+			this.height = document.body.clientHeight;
+			this.center = [Math.floor(this.width/2), Math.floor(this.height/2)];
+			this.ctx = null;
+			this.canvas_id = 'canvas';
+			this.radius = radius;
+			this.cell_height = Math.sin(1/12*Math.PI)*radius*2;
+			this.cell_hwidth = Math.cos(1/12*Math.PI)*radius*0.92;
+			this.selected = [-1,-1];
+			this.spawn_point = [0, 9];
+			this.exit_point = [19, 9];
+			this.towers = [];
+			//this.game_state = new GameState;
+			
+			this.place_tower = function(coordinates) {
+				var x = coordinates[0];
+				var y = coordinates[1];
+				if (!(!!this.towers[y])) {
+					this.towers[y] = [];
+				}
+				this.towers[y][x] = 'a';
+			}
+			
+			this.color = function(x,y) {
+				if (this.spawn_point.compare([x, y])) {
+					return [0, 255, 0];
+				} else if (this.exit_point.compare([x, y])) {
+					return [0, 0, 255];
+				} else if (this.selected.compare([x, y])) {
+					return [255, 0, 0];
+				} else if (this.towers[y] != undefined && this.towers[y][x] != undefined) {
+					return [255, 255, 255];
+				} else {
+					return [40, 40, 40];
+				};
+			};
+			
+			this.generateHTML = function(parent) {
+				parent.innerHTML = '<canvas id="'+this.canvas_id+'" width="'+this.width+'" height="'+this.height+'"></canvas>';
+				this.ctx = $(this.canvas_id).getContext("2d");
+			};
+			
+			this.clear = function() {
+				this.ctx.clearRect(0, 0, this.width, this.height);
+			};
+			
+			this.set_selected = function(new_val) {
+				this.selected = new_val;
+			};
+			
+			this.generateGrid = function() {
+				var s = this.radius;
+				var h = this.cell_height;
+				var r = this.cell_hwidth;
+				
+				for (var x = 0; x < 20; x++) {
+					for (var y = 0; y < 20; y++) {
+						this.drawHex(r+x*(2*r)+(y%2*r), r+y*(h+s), s, this.color(x,y));
+					}
+				}
+			};
+			
+			this.drawHex = function(x, y, r, color) {
+				this.ctx.beginPath();
+				this.ctx.fillStyle = 'rgb('+color[0]+', '+color[1]+', '+color[2]+')';
+				this.ctx.moveTo(x+Math.cos(0.5*Math.PI)*r, y+Math.sin(0.5*Math.PI)*r);
+				for (var v = 1; v < 7; v++) {
+					this.ctx.lineTo(x+Math.cos((v/3+0.5)*Math.PI)*r, y+Math.sin((v/3+0.5)*Math.PI)*r); 
+				}
+				this.ctx.fill();
+			};
+		};
+		
+		var Game = function() {
+			this.board = new Board(15);
+			this.score = 0;
+			
+			this.inc_score = function() {
+				this.score += 1;
+				if (this.score == 10) {
+					alert('You lose!');
+				}
+			}
+			
+			this.init = function(parent) {
+				this.board.generateHTML(parent);
+			};
+		};
+		
+		function draw() {
+			game.board.clear();
+			game.board.generateGrid();
+			for (var x = 0; x < enemies.length; x++) {
+				enemies[x].move();
+				enemies[x].draw();
+			}
+			enemies = enemies.filter(inPlay);
+		}
+		
+		function inPlay(object) {
+			return object.in_play;
+		}
+		
+		function $(id) {
+			return document.getElementById(id);
+		};
+		
+		var game = null;
+		var enemies = [];	
+	
+		function init() {
+			game = new Game();
+			game.init($('content'));
+			document.onmousemove = mouseMove;
+			document.onclick = placeTower;
+			setInterval(draw, 10);
+			setInterval(newEnemy, 2000);
+			return true
+		};
+		
+		function newEnemy() {
+			enemies.push(new Enemy());
+		}
+		
+		function mouseMove(e) {
+			game.board.set_selected( translateXY(e.pageX, e.pageY) );
+		}
+		
+		function placeTower(e) {                        
+			game.board.place_tower( translateXY(e.pageX, e.pageY) );
+		}
+		
+		function translateXY(x, y) {
+			
+			//pseudo Code!!!
+			var sectX = x / (2 * game.board.cell_hwidth);
+			var sectY = y / (game.board.cell_height + game.board.radius);
+			var sectPxlX = x % (2 * game.board.cell_hwidth);
+			var sectPxlY = y % (game.board.cell_height + game.board.radius);
+      
+			var m = game.board.cell_height / game.board.radius;
+
+			var arrayX = 0;
+			var arrayY = 0;
+
+			if (Math.floor(sectY % 2) == 1) {
+				// B type
+				//pseudo Code!!!
+				// right side
+				if (sectPxlX  >= game.board.radius) {
+				  if (sectPxlY < (2 * game.board.cell_height - sectPxlX * m)) {
+				    arrayY = sectY - 1;
+				    arrayX = sectX;
+				  } else {
+				    arrayY = sectY;
+				    arrayX = sectX;
+				  }
+				} else {
+				  if (sectPxlY < (sectPxlX * m)) {
+				    arrayY = sectY - 1;
+				    arrayX = sectX;   
+				  } else {
+				    arrayY = sectY;
+				    arrayX = sectX - 1;
+				  }
+				}
+			} else {
+				// A type
+				//pseudo Code!!!
+				// middle
+				arrayY = sectY;
+				arrayX = sectX;
+				// left Edge
+				if (sectPxlY < (game.board.cell_height - sectPxlX * m)) {
+				  arrayY = sectY - 1;
+				  arrayX = sectX - 1;
+				} else if (sectPxlY < (-1*game.board.cell_height + sectPxlX * m)) {
+				  arrayY = sectY - 1;
+				  arrayX = sectX;
+				}
+			}
+			
+			return [Math.floor(arrayX), Math.floor(arrayY)];
+		}
+		
+	</script>
+	<style>
+		body, html {padding: 0; margin: 0; background-color: black;}
+		#mouse {position: absolute; bottom: 0;}
+	</style>
+	<body>
+		<div id="content"></div>
+		<script type="text/javascript" charset="utf-8">
+			init();
+		</script>
+	</body>
+</html>
