@@ -1,113 +1,45 @@
-var Game = function() {
-	this.node = new NodeSocket(this);
-	this.board = new Board(15);
-	this.score = 0;
-	
-	this.inc_score = function() {
-		this.score += 1;
-		if (this.score == 10) {
-			// alert('You lose!');
-		};
+function Game() {
+	this.node    = new NodeSocket(this);
+	this.board   = new Board(15);
+	this.enemies = [];
+	this.score   = 0;
+	this.element = $('content');
+	this.init();
+};
+
+Game.prototype.inc_score = function() {
+	this.score += 1;
+	// if (this.score == 10) alert('You lose!');
+};
+
+Game.prototype.init = function() {
+	var game = this;
+	this.board.generateHTML(this.element);
+	document.onmousemove = function(e) { game.mouseMove(e); };
+	document.onclick     = function(e) { game.placeTower(e); };
+	setInterval("game.draw()", 66);
+	setInterval("game.newEnemy()", 2000);
+};
+
+Game.prototype.draw = function() {
+	this.board.clear();
+	this.board.generateGrid();
+	for (var x = 0; x < this.enemies.length; x++) {
+		this.enemies[x].move();
+		this.enemies[x].draw(this.board.ctx);
 	};
-	
-	this.init = function(parent) {
-		this.board.generateHTML(parent);
-	};
+	this.enemies = this.enemies.filter(inPlay);
 };
 
-function draw() {
-	game.board.clear();
-	game.board.generateGrid();
-	for (var x = 0; x < enemies.length; x++) {
-		enemies[x].move();
-		enemies[x].draw();
-	}
-	enemies = enemies.filter(inPlay);
-}
-
-function inPlay(object) {
-	return object.in_play;
-}
-
-function $(id) {
-	return document.getElementById(id);
+Game.prototype.newEnemy = function() {
+	this.enemies.push(new Enemy());
 };
 
-var game = null;
-var enemies = [];	
-var game_state = {};	
-
-function init() {
-	game = new Game();
-	game.init($('content'));
-	document.onmousemove = mouseMove;
-	document.onclick = placeTower;
-	setInterval(draw, 10);
-	setInterval(newEnemy, 2000);
-	return true
+Game.prototype.mouseMove = function(e) {
+	this.board.set_selected( this.board.translateXY(e.pageX, e.pageY) );
 };
 
-function newEnemy() {
-	enemies.push(new Enemy());
-}
-
-function mouseMove(e) {
-	game.board.set_selected( translateXY(e.pageX, e.pageY) );
-}
-
-function placeTower(e) {                        
-	game.board.place_tower( translateXY(e.pageX, e.pageY) );
-}
-
-function translateXY(x, y) {
-	
-	//pseudo Code!!!
-	var sectX = x / (2 * game.board.cell_hwidth);
-	var sectY = y / (game.board.cell_height + game.board.radius);
-	var sectPxlX = x % (2 * game.board.cell_hwidth);
-	var sectPxlY = y % (game.board.cell_height + game.board.radius);
-    
-	var m = game.board.cell_height / game.board.radius;
-
-	var arrayX = 0;
-	var arrayY = 0;
-
-	if (Math.floor(sectY % 2) == 1) {
-		// B type
-		//pseudo Code!!!
-		// right side
-		if (sectPxlX  >= game.board.radius) {
-		  if (sectPxlY < (2 * game.board.cell_height - sectPxlX * m)) {
-		    arrayY = sectY - 1;
-		    arrayX = sectX;
-		  } else {
-		    arrayY = sectY;
-		    arrayX = sectX;
-		  }
-		} else {
-		  if (sectPxlY < (sectPxlX * m)) {
-		    arrayY = sectY - 1;
-		    arrayX = sectX;   
-		  } else {
-		    arrayY = sectY;
-		    arrayX = sectX - 1;
-		  }
-		}
-	} else {
-		// A type
-		//pseudo Code!!!
-		// middle
-		arrayY = sectY;
-		arrayX = sectX;
-		// left Edge
-		if (sectPxlY < (game.board.cell_height - sectPxlX * m)) {
-		  arrayY = sectY - 1;
-		  arrayX = sectX - 1;
-		} else if (sectPxlY < (-1*game.board.cell_height + sectPxlX * m)) {
-		  arrayY = sectY - 1;
-		  arrayX = sectX;
-		}
-	}
-	
-	return [Math.floor(arrayX), Math.floor(arrayY)];
+Game.prototype.placeTower = function(e) {
+	this.board.place_tower( this.board.translateXY(e.pageX, e.pageY) );
 };
+

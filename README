@@ -1,10 +1,9 @@
 CANVAS TOWER DEFENSE
 
-
-to run the server:
+To run the server:
 
 	node server/runserver.js
 
-then load:
+Then load:
 
 	index.html

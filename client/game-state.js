@@ -1,3 +1,3 @@
-var GameState = function() {
-	this.towers = [];
+function GameState() {
+	// this.towers = [];
 };
