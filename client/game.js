@@ -22,7 +22,7 @@ Game.prototype.init = function() {
 	this.board.generateHTML(this.element);
 	document.onmousemove = function(e) { game.mouseMove(e); };
 	document.onclick     = function(e) { game.placeTower(e); };
-	setInterval("game.board.draw()", 66);
+	setInterval("game.board.draw()", 100);
 	setInterval("game.spawnEnemy()", 2000);
 };
 
@@ -36,5 +36,6 @@ Game.prototype.mouseMove = function(e) {
 
 Game.prototype.placeTower = function(e) {
 	this.board.placeTower( this.board.translateXY(e.pageX, e.pageY) );
+	this.state.enemies.forEach(function(e) {e.recalculate_path();});
 };
 

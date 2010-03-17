@@ -42,7 +42,11 @@ Board.prototype.color = function(x, y) {
 	} else if (this.game.state.towers[y] != undefined && this.game.state.towers[y][x] != undefined) {
 		return [255, 255, 255];
 	} else {
-		return [40, 40, 40];
+		if (this.game.state.enemies.filter(function(e) {return e.x == x && e.y == y}).length > 0) {
+			return [255, 255, 0];
+		} else {
+			return [40, 40, 40];
+		}
 	};
 };
 
