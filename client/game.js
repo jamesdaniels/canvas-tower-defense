@@ -3,6 +3,7 @@ function Game() {
 	this.board   = new Board(this, 15);
 	this.score   = 0;
 	this.element = $('content');
+	this.state   = new GameState();
 	this.init();
 	return this;
 };
@@ -11,6 +12,10 @@ Game.prototype.inc_score = function() {
 	this.score += 1;
 	if (this.score == 10) console.log('You lose!');
 };
+
+Game.prototype.sync_state = function() {
+	console.log('Damn someone dirtied the game state son, better sync it!');
+}
 
 Game.prototype.init = function() {
 	var game = this;

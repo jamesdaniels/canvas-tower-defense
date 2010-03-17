@@ -11,24 +11,24 @@ function Board(game, radius) {
 	this.selected    = [-1,-1];
 	this.spawn_point = [0, 9];
 	this.exit_point  = [19, 9];
-	this.towers      = [];
-	this.enemies     = [];
 };
 
 Board.prototype.spawnEnemy = function() {
-	this.enemies.push(new Enemy(this));
+	this.game.state.enemies.push(new Enemy(this));
+	this.game.sync_state();
 };
 
 Board.prototype.placeTower = function(coordinates) {
 	var x = coordinates[0];
 	var y = coordinates[1];
-	if (!(!!this.towers[y])) {
-		this.towers[y] = [];
+	if (!(!!this.game.state.towers[y])) {
+		this.game.state.towers[y] = [];
 	};
-	if (this.towers[y][x] == undefined) {
-		this.towers[y][x] = new Tower(this, x, y);
+	if (this.game.state.towers[y][x] == undefined) {
+		this.game.state.towers[y][x] = new Tower(this, x, y);
+		this.game.sync_state();
 	} else {
-		console.log('cannot placeTower: ', this.towers[y][x]);
+		console.log('cannot placeTower: ', this.game.state.towers[y][x]);
 	};
 };
 
@@ -39,7 +39,7 @@ Board.prototype.color = function(x, y) {
 		return [0, 0, 255];
 	} else if (this.selected.compare([x, y])) {
 		return [255, 0, 0];
-	} else if (this.towers[y] != undefined && this.towers[y][x] != undefined) {
+	} else if (this.game.state.towers[y] != undefined && this.game.state.towers[y][x] != undefined) {
 		return [255, 255, 255];
 	} else {
 		return [40, 40, 40];
@@ -66,11 +66,11 @@ Board.prototype.draw = function() {
 };
 
 Board.prototype.drawSprites = function() {
-	for (var x = 0; x < this.enemies.length; x++) {
-		this.enemies[x].move();
-		this.enemies[x].draw(this.ctx);
+	for (var x = 0; x < this.game.state.enemies.length; x++) {
+		this.game.state.enemies[x].move();
+		this.game.state.enemies[x].draw(this.ctx);
 	};
-	this.enemies = this.enemies.filter(inPlay);
+	this.game.state.enemies = this.game.state.enemies.filter(inPlay);
 	// TODO: draw and update towers here
 };
 
