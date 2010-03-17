@@ -1,4 +1,7 @@
-function Tower() {
+function Tower(x, y) {
+	this.x     = x;
+	this.y     = y;
+	this.angle = 0;
 	return this;
 };
 

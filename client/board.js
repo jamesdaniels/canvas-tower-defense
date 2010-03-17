@@ -11,15 +11,24 @@ function Board(radius) {
 	this.spawn_point = [0, 9];
 	this.exit_point  = [19, 9];
 	this.towers      = [];
+	this.enemies     = [];
 };
 
-Board.prototype.place_tower = function(coordinates) {
+Board.prototype.spawnEnemy = function() {
+	this.enemies.push(new Enemy());
+};
+
+Board.prototype.placeTower = function(coordinates) {
 	var x = coordinates[0];
 	var y = coordinates[1];
 	if (!(!!this.towers[y])) {
 		this.towers[y] = [];
 	};
-	this.towers[y][x] = 'a';
+	if (this.towers[y][x] == undefined) {
+		this.towers[y][x] = new Tower(x, y);
+	} else {
+		console.log('cannot placeTower: ', this.towers[y][x]);
+	};
 };
 
 Board.prototype.color = function(x, y) {
@@ -37,7 +46,7 @@ Board.prototype.color = function(x, y) {
 };
 
 Board.prototype.generateHTML = function(parent) {
-	parent.innerHTML = '<canvas id="'+this.canvas_id+'" width="'+this.width+'" height="'+this.height+'"></canvas>';
+	parent.innerHTML = '<canvas id="' + this.canvas_id + '" width="' + this.width + '" height="' + this.height + '"></canvas>';
 	this.ctx = $(this.canvas_id).getContext("2d");
 };
 
@@ -45,18 +54,32 @@ Board.prototype.clear = function() {
 	this.ctx.clearRect(0, 0, this.width, this.height);
 };
 
-Board.prototype.set_selected = function(new_val) {
+Board.prototype.setSelected = function(new_val) {
 	this.selected = new_val;
 };
 
-Board.prototype.generateGrid = function() {
-	var s = this.radius;
+// 
+Board.prototype.draw = function() {
+	this.clear();
+	this.drawGrid();
+	for (var x = 0; x < this.enemies.length; x++) {
+		this.enemies[x].move();
+		this.enemies[x].draw(this.ctx);
+	};
+	this.enemies = this.enemies.filter(inPlay);
+
+};
+
+// grid related ---------------------------------------------------------------
+
+Board.prototype.drawGrid = function() {
+	var r = this.radius;
 	var h = this.cell_height;
-	var r = this.cell_hwidth;
+	var w = this.cell_hwidth;
 	
 	for (var x = 0; x < 20; x++) {
 		for (var y = 0; y < 20; y++) {
-			this.drawHex(r+x*(2*r)+(y%2*r), r+y*(h+s), s, this.color(x,y));
+			this.drawHex(w+x*(2*w)+(y%2*w), w+y*(h+r), r, this.color(x,y));
 		}
 	}
 };
