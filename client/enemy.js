@@ -1,4 +1,5 @@
-function Enemy() {
+function Enemy(board) {
+	this.board   = board;
 	this.x       = 30;
 	this.y       = 218;
 	this.speed   = 5;
@@ -16,15 +17,9 @@ Enemy.prototype.draw = function(ctx) {
 
 Enemy.prototype.move = function() {
 	this.x += this.speed;
+	if (this.board.exit_point.compare(this.board.translateXY(this.x, this.y))) {
+		console.log('out of play!');
+		this.board.game.inc_score();
+		this.in_play = false;
+	};
 };
-
-// var Enemy = function() {
-// 	this.move = function() {
-// 		this.x += this.speed;
-// 		if (game.board.exit_point.compare(translateXY(this.x, this.y))) {
-// 			console.log('out of play!');
-// 			game.inc_score();
-// 			this.in_play = false;
-// 		};
-// 	};
-// };

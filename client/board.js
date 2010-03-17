@@ -1,4 +1,5 @@
-function Board(radius) {
+function Board(game, radius) {
+	this.game        = game;
 	this.width       = document.body.clientWidth;
 	this.height      = document.body.clientHeight;
 	this.center      = [Math.floor(this.width/2), Math.floor(this.height/2)];
@@ -15,7 +16,7 @@ function Board(radius) {
 };
 
 Board.prototype.spawnEnemy = function() {
-	this.enemies.push(new Enemy());
+	this.enemies.push(new Enemy(this));
 };
 
 Board.prototype.placeTower = function(coordinates) {
@@ -25,7 +26,7 @@ Board.prototype.placeTower = function(coordinates) {
 		this.towers[y] = [];
 	};
 	if (this.towers[y][x] == undefined) {
-		this.towers[y][x] = new Tower(x, y);
+		this.towers[y][x] = new Tower(this, x, y);
 	} else {
 		console.log('cannot placeTower: ', this.towers[y][x]);
 	};
@@ -58,16 +59,19 @@ Board.prototype.setSelected = function(new_val) {
 	this.selected = new_val;
 };
 
-// 
 Board.prototype.draw = function() {
 	this.clear();
 	this.drawGrid();
+	this.drawSprites();
+};
+
+Board.prototype.drawSprites = function() {
 	for (var x = 0; x < this.enemies.length; x++) {
 		this.enemies[x].move();
 		this.enemies[x].draw(this.ctx);
 	};
 	this.enemies = this.enemies.filter(inPlay);
-
+	// TODO: draw and update towers here
 };
 
 // grid related ---------------------------------------------------------------
