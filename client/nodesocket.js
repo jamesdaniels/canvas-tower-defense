@@ -8,36 +8,42 @@ function NodeSocket(game) {
 NodeSocket.prototype.connect = function() {
 	console.log('trying to connect ...');
 	this.ws = new WebSocket("ws://localhost:8080/defense");
-	this.ws.onmessage = function() { this.onmessage; };
-	this.ws.onclose   = function() { this.onclose; };
-	this.ws.onopen    = function() { this.onopen; };
+	var socket = this;
+	this.ws.onmessage = function(e) { socket.onmessage(e); };
+	this.ws.onclose   = function(e) { socket.onclose(e); };
+	this.ws.onopen    = function(e) { socket.onopen(e); };
 };
 
 NodeSocket.prototype.onopen = function() {
-	console.log('Connection Opened!', this.ws);
-	this.ws.send('OPEN');
+	console.log('Connection Opened!');
+	this.ws.send('START');
 };
 
 NodeSocket.prototype.onclose = function() {
-	console.log('Connection Closed!', this.ws);
-	this.ws.send('CLOSE');
+	console.log('Connection Closed!');
 };
 
 NodeSocket.prototype.onmessage = function(e) {
-	console.log('Connection OnMessage!', this.ws);
 	var jsonData = JSON.parse(e.data);
+	// var jsonData = e.data;
+	// console.log('Connection OnMessage!');
+	// console.log(jsonData);
+	// console.log(jsonData[0]);
+	// console.log(typeof(jsonData));
+	var action  = jsonData.method;
+	var data    = jsonData.args;
 	console.log(jsonData);
-	// var action  = jsonData[0];
-	// var data    = jsonData[1];
-	// if (this.handlers[action]) {
-	// 	this.handlers[action](data);
-	// } else {
-	// 	console.log('handler not found');
-	// };
+	console.log(action);
+	console.log(data);
+	if (this.game.nodeHandlers[action]) {
+		this.game.nodeHandlers[action](data);
+	} else {
+		console.log('handler not found');
+	};
 };
 
-NodeSocket.prototype.handlers = {
-	pong: function(data) {
-		console.log('data', data);
-  }
-};
+// NodeSocket.prototype.handlers = {
+// 	pong: function(data) {
+// 		console.log('data', data);
+//   }
+// };

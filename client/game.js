@@ -14,8 +14,29 @@ Game.prototype.inc_score = function() {
 };
 
 Game.prototype.sync_state = function() {
-	console.log('Damn someone dirtied the game state son, better sync it!');
-}
+	// this.node.ws.send('sync_state');
+};
+
+Game.prototype.sendToNode = function(action, args) {
+	var jsonData = JSON.stringify({ action: action, args: args });
+	if (this.node.ws) {
+		this.node.ws.send(jsonData);
+	} else {
+		console.log('trying to send, but not connected');
+	};
+};
+
+Game.prototype.nodeHandlers = {
+	placeTowers: function(data) {
+		console.log('callback', data);
+	}
+	// var jsonData = JSON.stringify(data);
+	// if (this.node.ws) {
+	// 	this.node.ws.send(jsonData);
+	// } else {
+	// 	console.log('trying to send, but not connected');
+	// };
+};
 
 Game.prototype.init = function() {
 	var game = this;
@@ -35,6 +56,7 @@ Game.prototype.mouseMove = function(e) {
 };
 
 Game.prototype.placeTower = function(e) {
-	this.board.placeTower( this.board.translateXY(e.pageX, e.pageY) );
+	// this.board.placeTower( this.board.translateXY(e.pageX, e.pageY) );
+	this.sendToNode('placeTower', this.board.translateXY(e.pageX, e.pageY));
 };
 
