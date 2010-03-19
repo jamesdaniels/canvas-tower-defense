@@ -27,8 +27,8 @@ NodeSocket.prototype.onmessage = function(e) {
 	var json = JSON.parse(e.data);
 	var action  = json.action;
 	var data    = json.args;
-	if (this.game.nodeHandlers[action]) {
-		this.game.nodeHandlers[action].apply(this.game, Array(data));
+	if (this.game.handler[action]) {
+		this.game.handler[action](data);
 	} else {
 		console.log('handler not found');
 	};

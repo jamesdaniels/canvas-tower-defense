@@ -1,5 +1,6 @@
 function Game() {
 	this.node    = new NodeSocket(this);
+	this.handler = new NodeHandler(this);
 	this.board   = new Board(this, 15);
 	this.score   = 0;
 	this.element = $('content');
