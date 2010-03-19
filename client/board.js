@@ -24,11 +24,24 @@ Board.prototype.placeTower = function(coordinates) {
 	if (!(!!this.game.state.towers[y])) {
 		this.game.state.towers[y] = [];
 	};
-	if (this.game.state.towers[y][x] == undefined) {
+	if (this.game.state.towers[y][x] == undefined || this.game.state.towers[y][x] == null) {
 		this.game.state.towers[y][x] = new Tower(this, x, y);
-		this.game.sync_state();
 	} else {
 		console.log('cannot placeTower: ', this.game.state.towers[y][x]);
+	};
+};
+
+Board.prototype.removeTower = function(coordinates) {
+	var x = coordinates[0];
+	var y = coordinates[1];
+	if (!(!!this.game.state.towers[y])) {
+		return false;
+	};
+	if (this.game.state.towers[y][x] != undefined && this.game.state.towers[y][x] != null) {
+		this.game.state.towers[y][x] = null;
+		return true;
+	} else {
+		return false;
 	};
 };
 

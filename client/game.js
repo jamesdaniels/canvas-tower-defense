@@ -14,7 +14,6 @@ Game.prototype.inc_score = function() {
 };
 
 Game.prototype.sync_state = function() {
-	console.log('Damn someone dirtied the game state son, better sync it!');
 }
 
 Game.prototype.init = function() {
@@ -35,7 +34,15 @@ Game.prototype.mouseMove = function(e) {
 };
 
 Game.prototype.placeTower = function(e) {
-	this.board.placeTower( this.board.translateXY(e.pageX, e.pageY) );
+	var coordinates = this.board.translateXY(e.pageX, e.pageY);
+	this.board.placeTower( coordinates );
 	this.state.enemies.forEach(function(e) {e.recalculate_path();});
+	if (this.state.enemies.every(function(e) {return e.new_path;}) && (new Enemy(this.board)).path) {
+		console.log('Placed tower at ' + coordinates[0] + ',' + coordinates[1]);
+		this.state.enemies.forEach(function(e) {e.commit_path();});
+	} else {
+		console.log('ILLEGAL MOVE!');
+		this.board.removeTower( coordinates );
+	}
 };
 
