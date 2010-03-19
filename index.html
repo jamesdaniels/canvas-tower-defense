@@ -10,9 +10,15 @@
 	<style>
 		body, html {padding: 0; margin: 0; background-color: black;}
 		#mouse {position: absolute; bottom: 0;}
+		#controls {position: absolute; top: 0; right: 0;}
+		#controls button {display: block; width: 120px; margin: 10px;}
 	</style>
 	<body>
 		<div id="content"></div>
+		<div id="controls">
+			<button id="build_tower" disabled="disabled" onclick="game.placeTower();">Build tower</button>
+			<button id="sell_tower"  disabled="disabled" onclick="game.removeTower();">Sell tower</button>
+		</div>
 		<script type="text/javascript" charset="utf-8">
 			var game  = new Game();
 		</script>

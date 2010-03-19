@@ -27,25 +27,15 @@ Game.prototype.sendToNode = function(action, args) {
 	};
 };
 
-Game.prototype.nodeHandlers = {
-	placeTower: function(data) {
-		this.board.placeTower(data);
-		this.state.enemies.forEach(function(e) {e.recalculate_path();});
-		if (this.state.enemies.every(function(e) {return e.new_path;}) && (new Enemy(this.board)).path) {
-			console.log('Placed tower at ' + data[0] + ',' + data[1]);
-			this.state.enemies.forEach(function(e) {e.commit_path();});
-		} else {
-			console.log('ILLEGAL MOVE!');
-			this.board.removeTower(data);
-		};
-	}
+Game.prototype.update_controls = function() {
+	document.getElementById('build_tower'  ).disabled =  this.board.tower_at(this.board.selected);
+	document.getElementById('sell_tower'   ).disabled = !this.board.tower_at(this.board.selected);
 };
 
 Game.prototype.init = function() {
 	var game = this;
 	this.board.generateHTML(this.element);
-	document.onmousemove = function(e) { game.mouseMove(e); };
-	document.onclick     = function(e) { game.placeTower(e); };
+	document.onclick = function(e) { game.triggerSelected(e); };
 	setInterval("game.board.draw()", 100);
 	setInterval("game.spawnEnemy()", 2000);
 };
@@ -54,11 +44,16 @@ Game.prototype.spawnEnemy = function() {
 	this.board.spawnEnemy();
 };
 
-Game.prototype.mouseMove = function(e) {
-	this.board.setSelected( this.board.translateXY(e.pageX, e.pageY) );
+Game.prototype.triggerSelected = function(e) {
+	if (this.board.setSelected( this.board.translateXY(e.pageX, e.pageY) ))
+		this.update_controls();
 };
 
-Game.prototype.placeTower = function(e) {
-	this.sendToNode("placeTower", this.board.translateXY(e.pageX, e.pageY));
+Game.prototype.placeTower = function() {
+	this.sendToNode("placeTower", this.board.selected);
+};
+
+Game.prototype.removeTower = function() {
+	this.sendToNode("removeTower", this.board.selected);
 };
 
