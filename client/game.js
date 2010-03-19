@@ -37,11 +37,6 @@ Game.prototype.init = function() {
 	this.board.generateHTML(this.element);
 	document.onclick = function(e) { game.triggerSelected(e); };
 	setInterval("game.board.draw()", 100);
-	setInterval("game.spawnEnemy()", 2000);
-};
-
-Game.prototype.spawnEnemy = function() {
-	this.board.spawnEnemy();
 };
 
 Game.prototype.triggerSelected = function(e) {

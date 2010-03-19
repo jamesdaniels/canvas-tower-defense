@@ -22,6 +22,11 @@ Module.prototype.onData = function(data, connection){
 		case 'START':
 			logger.store('START CONNECTION');
 			this.addConnection(connection);
+			var that = this;
+			function gameLoop() {
+				that.broadcast({"action": "spawnEnemy", "args": null});
+			};
+			setInterval(gameLoop, 2000);
 			break;
 		default:
 			logger.store(data);

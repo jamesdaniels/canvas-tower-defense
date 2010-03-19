@@ -20,3 +20,7 @@ NodeHandler.prototype.removeTower = function(coordinates) {
 	this.game.board.removeTower(coordinates);
 	this.game.update_controls();
 };
+
+NodeHandler.prototype.spawnEnemy = function() {
+	this.game.board.spawnEnemy();
+};
