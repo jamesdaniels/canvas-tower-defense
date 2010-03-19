@@ -16,11 +16,12 @@
 	<body>
 		<div id="content"></div>
 		<div id="controls">
-			<button id="build_tower" disabled="disabled" onclick="game.placeTower();">Build tower</button>
-			<button id="sell_tower"  disabled="disabled" onclick="game.removeTower();">Sell tower</button>
+			<button id="build_tower" disabled="disabled" onclick="game.place_tower();">Build tower</button>
+			<button id="sell_tower"  disabled="disabled" onclick="game.remove_tower();">Sell tower</button>
 		</div>
 		<script type="text/javascript" charset="utf-8">
 			var game  = new Game();
+			game.init();
 		</script>
 	</body>
 </html>

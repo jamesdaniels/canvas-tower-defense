@@ -23,3 +23,7 @@ Tower.prototype.move = function() {
 		this.angle = 0;
 	}
 };
+
+try {
+	exports.Tower = Tower;
+} catch(e) {}

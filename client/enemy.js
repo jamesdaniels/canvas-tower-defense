@@ -1,7 +1,7 @@
-function Enemy(board) {
+function Enemy(board, x, y) {
 	this.board   = board;
-	this.x       = this.board.spawn_point[0];
-	this.y       = this.board.spawn_point[1];
+	this.x       = x;
+	this.y       = y;
 	this.path    = [];
 	this.new_path = [];
 	this.speed   = 5;
@@ -9,10 +9,6 @@ function Enemy(board) {
 	this.recalculate_path();
 	this.commit_path();
 	return this;
-};
-
-Enemy.prototype.draw = function(ctx) {
-	
 };
 
 Enemy.prototype.move = function() {
@@ -55,7 +51,7 @@ Enemy.prototype.path_to = function(from, to) {
 				for (var i = 0; i < directions[0].length; i++) {
 					var new_point = [start[0]+directions[start[1] % 2][i][0], start[1]+directions[start[1] % 2][i][1]];
 					if (new_point[0] >= 0 && new_point[1] >= 0 && new_point[0] < 20 && new_point[1] < 20) {
-						if (this.board.game.state.towers[new_point[1]] == undefined || this.board.game.state.towers[new_point[1]][new_point[0]] == undefined) {
+						if (!this.board.has_tower(new_point)) {
 							if (seen.filter(function(e) {return e.compare(new_point)}).length == 0) {
 								seen.push(new_point);
 								var new_path = paths[x].slice(0);
@@ -74,3 +70,7 @@ Enemy.prototype.path_to = function(from, to) {
 		return false;
 	}
 }
+
+try {
+exports.Enemy = Enemy;
+} catch(e) {}
