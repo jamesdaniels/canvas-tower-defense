@@ -18,26 +18,21 @@ Module.prototype.onData = function(data, connection){
     this.server.connections    = [];
     this.server.nextIdToAssign = 0;
   };
-	// var data = JSON.parse(data);
-	// logger.store("~~~~~~");
-	logger.store(data);
-	// logger.store(JSON.parse(data));
-	// logger.store(JSON.stringify(data));
-	// logger.store("~~~~~~");
 	switch (data) {
 		case 'START':
+			logger.store('START CONNECTION');
 			this.addConnection(connection);
 			break;
 		default:
-			this.broadcast(data);
+			logger.store(data);
+			this.broadcast(JSON.parse(data));
 	};
 };
 
 Module.prototype.broadcast = function(data) {
-	logger.store(data);
-	var data = JSON.stringify(data)
+	var json = JSON.stringify(data);
 	this.server.connections.forEach(function(connection) {
-		connection.send(data);
+		connection.send(json);
 	});
 };
 

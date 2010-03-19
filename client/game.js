@@ -18,7 +18,7 @@ Game.prototype.sync_state = function() {
 };
 
 Game.prototype.sendToNode = function(action, args) {
-	var jsonData = JSON.stringify({ action: action, args: args });
+	var jsonData = JSON.stringify({ "action": action, "args": args });
 	if (this.node.ws) {
 		this.node.ws.send(jsonData);
 	} else {
@@ -27,15 +27,10 @@ Game.prototype.sendToNode = function(action, args) {
 };
 
 Game.prototype.nodeHandlers = {
-	placeTowers: function(data) {
-		console.log('callback', data);
+	placeTower: function(data) {
+		console.log('handler:', 'placeTower', data);
+		this.board.placeTower(data);
 	}
-	// var jsonData = JSON.stringify(data);
-	// if (this.node.ws) {
-	// 	this.node.ws.send(jsonData);
-	// } else {
-	// 	console.log('trying to send, but not connected');
-	// };
 };
 
 Game.prototype.init = function() {
@@ -56,7 +51,6 @@ Game.prototype.mouseMove = function(e) {
 };
 
 Game.prototype.placeTower = function(e) {
-	// this.board.placeTower( this.board.translateXY(e.pageX, e.pageY) );
-	this.sendToNode('placeTower', this.board.translateXY(e.pageX, e.pageY));
+	this.sendToNode("placeTower", this.board.translateXY(e.pageX, e.pageY));
 };
 

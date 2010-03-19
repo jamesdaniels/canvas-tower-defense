@@ -7,7 +7,7 @@ function NodeSocket(game) {
 
 NodeSocket.prototype.connect = function() {
 	console.log('trying to connect ...');
-	this.ws = new WebSocket("ws://localhost:8080/defense");
+	this.ws = new WebSocket("ws://localhost:8080/towerdefense");
 	var socket = this;
 	this.ws.onmessage = function(e) { socket.onmessage(e); };
 	this.ws.onclose   = function(e) { socket.onclose(e); };
@@ -24,26 +24,12 @@ NodeSocket.prototype.onclose = function() {
 };
 
 NodeSocket.prototype.onmessage = function(e) {
-	var jsonData = JSON.parse(e.data);
-	// var jsonData = e.data;
-	// console.log('Connection OnMessage!');
-	// console.log(jsonData);
-	// console.log(jsonData[0]);
-	// console.log(typeof(jsonData));
-	var action  = jsonData.method;
-	var data    = jsonData.args;
-	console.log(jsonData);
-	console.log(action);
-	console.log(data);
+	var json = JSON.parse(e.data);
+	var action  = json.action;
+	var data    = json.args;
 	if (this.game.nodeHandlers[action]) {
-		this.game.nodeHandlers[action](data);
+		this.game.nodeHandlers[action].apply(this.game, Array(data));
 	} else {
 		console.log('handler not found');
 	};
 };
-
-// NodeSocket.prototype.handlers = {
-// 	pong: function(data) {
-// 		console.log('data', data);
-//   }
-// };
