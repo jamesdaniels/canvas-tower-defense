@@ -11,6 +11,13 @@ function Board(game, radius) {
 	this.selected    = [-1,-1];
 	this.spawn_point = [0, 9];
 	this.exit_point  = [19, 9];
+	this.dimensions  = [20, 20];
+};
+
+Board.prototype.tower_at = function(coordinates) {
+	return (this.game.state.towers[coordinates[1]] != undefined && 
+	        this.game.state.towers[coordinates[1]][coordinates[0]] != undefined && 
+	        this.game.state.towers[coordinates[1]][coordinates[0]] != null);
 };
 
 Board.prototype.spawnEnemy = function() {
@@ -73,7 +80,12 @@ Board.prototype.clear = function() {
 };
 
 Board.prototype.setSelected = function(new_val) {
-	this.selected = new_val;
+	if (new_val[0] >= 0 && new_val[1] >= 0 && new_val[0] < this.dimensions[0] && new_val[1] < this.dimensions[1]) {
+		this.selected = new_val;
+		return true;
+	} else {
+		return false;
+	}
 };
 
 Board.prototype.draw = function() {
@@ -98,8 +110,8 @@ Board.prototype.drawGrid = function() {
 	var h = this.cell_height;
 	var w = this.cell_hwidth;
 	
-	for (var x = 0; x < 20; x++) {
-		for (var y = 0; y < 20; y++) {
+	for (var x = 0; x < this.dimensions[0]; x++) {
+		for (var y = 0; y < this.dimensions[1]; y++) {
 			this.drawHex(w+x*(2*w)+(y%2*w), w+y*(h+r), r, this.color(x,y));
 		}
 	}
